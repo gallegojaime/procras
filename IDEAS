@@ -1,0 +1,59 @@
+###
+ #  IDEAS
+ #
+ #  The IDEAS file serves as a personal listing for possible functionalities that
+ #  could be implemented in the future.
+ #
+ #
+### By Jaime Gallego.
+
+- Unix philosophy: take input from stdin, output in simple TSV format.
+
+	13	Do foo\n
+	27	Do bar\n
+	365	Do qux\n
+
+- Develop a new program that uses cron et al. to warn instead of just list.
+
+- Change machine-friendly format with --human-readable and --more-human-readable.
+	[default], --machine-readable:
+	13	Do foo\n
+
+	--human-readable:
+
+	13d	Do foo\n
+
+	--more-human-readable:
+
+	13 days	Do foo\n
+
+- Round days to weeks, weeks to years... when apt/fitting. Only in human-readable or
+  when time unit explicitly specified as a flag, to avoid confusion.
+
+	13d	Do foo\n
+
+	becomes...
+
+	2w	Do foo\n
+
+
+	However, this would not be apt because of imprecision:
+
+	200d	Do qux\n
+
+	becoming...
+
+	1y	Do qux\n
+
+
+	This would not be apt either:
+
+	200d	Do qux\n
+
+	becoming...
+
+	29w	Do qux\n
+
+	because when does one think about 200 days as 30 weeks, apart from pregnancy?
+	Days usually make comparisons to other scales easier. To force week-rounding,
+	one can use --week-rounding option (maybe with a --pregnancy alias :) ).
