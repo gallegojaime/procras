@@ -1,0 +1,9 @@
+#   procrasls
+#
+#   The deadline lister in the st-procras suite.
+#   Default behavior of calling st-procras,
+#   without any other arguments, is to list
+#   the deadlines.
+#
+#
+### By Jaime Gallego.

@@ -7,6 +7,7 @@
  #
 ### By Jaime Gallego.
 
+- Input file has extension .pcr.
 - Unix philosophy: take input from stdin, output in simple TSV format.
 
 	13	Do foo\n
@@ -57,3 +58,5 @@
 	because when does one think about 200 days as 30 weeks, apart from pregnancy?
 	Days usually make comparisons to other scales easier. To force week-rounding,
 	one can use --week-rounding option (maybe with a --pregnancy alias :) ).
+
+--unix option for seconds-since-epoch input. Useful when taking output of another program.

@@ -1,9 +1,17 @@
-### procras
-# #
-# # The looming deadline displayer and Panic Monster awakener.
-# # procras improves your situational awareness by simply showing
-### the days remaining for tasks.
-#
-#
-#
-#   By Jaime Gallego.
+                       o                                                       
+                       8                                                       
+              .oPYo.  o8P       .oPYo. oPYo. .oPYo. .oPYo. oPYo. .oPYo. .oPYo. 
+              Yb..     8  ooooo 8    8 8  `' 8    8 8    ' 8  `' .oooo8 Yb..   
+                'Yb.   8        8    8 8     8    8 8    . 8     8    8   'Yb. 
+              `YooP'   8        8YooP' 8     `YooP' `YooP' 8     `YooP8 `YooP' 
+              :.....:::..:::::::8 ....:..:::::.....::.....:..:::::.....::.....:
+              ::::::::::::::::::8 :::::::::::::::::::::::::::::::::::::::::::::
+              ::::::::::::::::::..:::::::::::::::::::::::::::::::::::::::::::::  
+st-procras
+Keep your procrastination in check.
+
+The st-procras package improves your situational awareness through
+managing a local deadline list.
+
+
+By Jaime Gallego.
