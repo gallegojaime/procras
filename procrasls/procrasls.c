@@ -1,9 +1,11 @@
 #define BOOL int
-#define TESTFILE "test.pcr"
 #define POSIX_STD_BUF_SIZE 4096
 #define TITLE_SIZE 128 
 #define TRUE 1
 #define FALSE 0
+
+#define BASE_FORMAT_TO_MODIFY "%%4i%%2i%%2iT%%2i%%2i%%2iZ;%%%i[^\t\n]"
+#define TESTFILE_PATH "test.pcr"
 
 #include <argp.h>
 #include <stdio.h>
@@ -30,14 +32,14 @@ struct Deadline
 /* TODO Add int argc, char* argv[] when implementing inputs */
 int main(void)
 {
-	char* tsvFilePath = TESTFILE; /* Testing */
-	if (!fileExistsAndIsReadable(tsvFilePath))
+	char* csvFilePath = TESTFILE_PATH; /* FIXME Testing */
+	if (!fileExistsAndIsReadable(csvFilePath))
 	{
 		fprintf(stderr, "File does not exist or is not readable!\n");
 		return -1;
 	}
 	
-	FILE* fp = fopen(tsvFilePath, "r");
+	FILE* fp = fopen(csvFilePath, "r");
 	
 	if (!fpIsValid(fp))
 	{
@@ -48,15 +50,15 @@ int main(void)
 	char buffer[POSIX_STD_BUF_SIZE];
 
 	/* Check how much space is needed for format fed to scanf */
-	int formatLength = snprintf(NULL, 0, "%%4i%%2i%%2iT%%2i%%2i%%2iZ;%%%i[^\t\n]", TITLE_SIZE);
+	int formatLength = snprintf(NULL, 0, BASE_FORMAT_TO_MODIFY, TITLE_SIZE);
 
 	/* Line format: ISO 8601 + title string */	
 	char lineFormat[formatLength + 1];
 
-	/* Add length specifier to keep the format updated even when
-	 * the constant changes */
-	sprintf(lineFormat,
-		"%%4i%%2i%%2iT%%2i%%2i%%2iZ;%%%i[^\t\n]", TITLE_SIZE);
+	/* Craft the format that will be used in scanf.
+	 * Will keep the title length correct even if the
+	 * constant is changed */
+	sprintf(lineFormat, BASE_FORMAT_TO_MODIFY, TITLE_SIZE);
 
 	struct Deadline* cur_p = malloc(sizeof(struct Deadline));
 
