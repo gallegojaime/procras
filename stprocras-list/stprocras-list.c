@@ -5,7 +5,7 @@
 #define FALSE 0
 
 #define BASE_FORMAT_TO_MODIFY "%%4i%%2i%%2iT%%2i%%2i%%2iZ;%%%i[^\t\n]"
-#define TESTFILE_PATH "test.pcr"
+#define TESTFILE_PATH "tests/test.pcr"
 
 #include <argp.h>
 #include <stdio.h>

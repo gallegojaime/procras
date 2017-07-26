@@ -8,7 +8,7 @@
 ### By Jaime Gallego.
 
 - Input file has extension .pcr.
-- Unix philosophy: take input from stdin, output in simple TSV format.
+- Unix philosophy: take input from stdin or CSV file, output in simple TSV format.
 
 	13	Do foo\n
 	27	Do bar\n
