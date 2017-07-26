@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -Wall -Wextra -pedantic -Werror -std=c99
+CFLAGS = -g -Wall -Wextra -Werror
 NAME= stprocras-list
 
 $(NAME): $(NAME).c

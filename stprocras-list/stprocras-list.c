@@ -1,5 +1,5 @@
 #define BOOL int
-#define POSIX_STD_BUF_SIZE 4096
+#define STD_BUF_SIZE 4096
 #define TITLE_SIZE 128 
 #define TRUE 1
 #define FALSE 0
@@ -46,11 +46,13 @@ int main(void)
 		fprintf(stderr, "File stream is not valid!\n");
 		return -2;
 	}
-	
-	char buffer[POSIX_STD_BUF_SIZE];
+
+	size_t bufferSize = sizeof(char) * STD_BUF_SIZE;
+	char* buffer = malloc(bufferSize);
 
 	/* Check how much space is needed for format fed to scanf */
-	int formatLength = snprintf(NULL, 0, BASE_FORMAT_TO_MODIFY, TITLE_SIZE);
+	size_t const formatLength = (size_t) snprintf(NULL, 0,
+				BASE_FORMAT_TO_MODIFY, TITLE_SIZE);
 
 	/* Line format: ISO 8601 + title string */	
 	char lineFormat[formatLength + 1];
@@ -62,7 +64,7 @@ int main(void)
 
 	struct Deadline* cur_p = malloc(sizeof(struct Deadline));
 
-	while(fgets(buffer, sizeof(buffer), fp)) 
+	while(getline(&buffer, &bufferSize, fp) != -1) 
 	{
 		sscanf(buffer, lineFormat,
 				&(cur_p->yr), &(cur_p->mon), &(cur_p->day),
@@ -73,6 +75,7 @@ int main(void)
 	}
 	
 	free(cur_p);
+	free(buffer);
 	fclose(fp);
 
 	return 0;
