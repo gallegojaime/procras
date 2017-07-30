@@ -13,9 +13,6 @@
 #include <string.h>
 #include <unistd.h>
 
-BOOL fileExistsAndIsReadable(char* filePathToCheck);
-BOOL fpIsValid(FILE* fp);
-
 struct Deadline 
 {
 	int yr;
@@ -28,6 +25,11 @@ struct Deadline
 
 	char title[TITLE_SIZE];
 };
+
+BOOL fileExistsAndIsReadable(char* filePathToCheck);
+BOOL fpIsValid(FILE* fp);
+void zero_buffer(struct Deadline* cur_p);
+
 
 /* TODO Add int argc, char* argv[] when implementing inputs */
 int main(void)
@@ -66,6 +68,7 @@ int main(void)
 
 	while(getline(&buffer, &bufferSize, fp) != -1) 
 	{
+		zero_buffer(cur_p);
 		sscanf(buffer, lineFormat,
 				&(cur_p->yr), &(cur_p->mon), &(cur_p->day),
 				&(cur_p->hr), &(cur_p->min), &(cur_p->sec),
@@ -89,4 +92,15 @@ BOOL fileExistsAndIsReadable(char* filePathToCheck)
 BOOL fpIsValid(FILE* fp)
 {
 	return (fp != NULL) ? TRUE : FALSE;
+}
+
+void zero_buffer(struct Deadline* cur_p)
+{
+	
+	for (int titleLength = strlen(cur_p->title), i = 0; i < titleLength; i++)
+	{
+		cur_p->title[i] = '\0';
+	}
+
+	return;
 }
