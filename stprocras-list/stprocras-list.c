@@ -4,6 +4,8 @@
 #define BASE_FORMAT_TO_MODIFY "%%4i%%2i%%2iT%%2i%%2i%%2iZ;%%%i[^\t\n]"
 #define TESTFILE_PATH "tests/test.pcr"
 
+#define CONTINUE_AFTER_DATE_ERROR true // FIXME Testing until flag can be parsed
+
 // Dummy returns so that GCC does not complain & to keep track of these tests
 #define TEST_DUMMY_TRUE 1
 #define TEST_DUMMY_FALSE 0
@@ -33,25 +35,22 @@ struct ParsedDeadline
 	char title[TITLE_SIZE];
 };
 
-struct DeadlineInRelativeTime
+struct DeadlineInRelTime
 {
 	int days;
 	char title[TITLE_SIZE];
 };
 
-bool dateIsValid(struct ParsedDeadline* cur_p);
+bool dateIsValid(struct ParsedDeadline* prsd_p);
 bool fileExistsAndIsReadable(char* filePathToCheck);
 bool fpIsValid(FILE* fp);
-void printLine(struct DeadlineInRelativeTime calculatedDeadline);
-void zeroBuffer(struct ParsedDeadline* cur_p);
-struct DeadlineInRelativeTime calculateDaysToDeadline(struct ParsedDeadline* cur_p);
+void printRelativeDeadline(struct DeadlineInRelTime rel);
+void zeroParsedDeadlineTitle(struct ParsedDeadline* prsd_p);
+struct DeadlineInRelTime generateRelDeadline(struct ParsedDeadline* prsd_p);
 
 // TODO Add int argc, char* argv[] when implementing inputs
 int main(void)
 {
-	// FIXME Testing. Should change depending on --continue-after- ... flag
-	bool continueAfterDateError = true;
-
 	char* csvFilePath = TESTFILE_PATH; // FIXME Testing
 	if (!fileExistsAndIsReadable(csvFilePath))
 	{
@@ -82,21 +81,22 @@ int main(void)
 	 * layout is changed */
 	sprintf(lineFormat, BASE_FORMAT_TO_MODIFY, TITLE_SIZE);
 
-	struct ParsedDeadline* cur_p = malloc(sizeof(struct ParsedDeadline));
+	struct ParsedDeadline* prsd_p = malloc(sizeof(struct ParsedDeadline));
 
-	for(int lineCount = 1; getline(&buffer, &bufferSize, fp) != -1; ++lineCount) 
+	for (int lineCount = 1;
+			getline(&buffer, &bufferSize, fp) != -1; ++lineCount) 
 	{
-		zeroBuffer(cur_p);
+		zeroParsedDeadlineTitle(prsd_p);
 		sscanf(buffer, lineFormat,
-				&(cur_p->yr), &(cur_p->mon), &(cur_p->day),
-				&(cur_p->hr), &(cur_p->min), &(cur_p->sec),
-				cur_p->title);
+				&(prsd_p->yr), &(prsd_p->mon), &(prsd_p->day),
+				&(prsd_p->hr), &(prsd_p->min), &(prsd_p->sec),
+				prsd_p->title);
 
-		if (!dateIsValid(cur_p))
+		if (!dateIsValid(prsd_p))
 		{
-			fprintf(stderr, "Date in line %i is invalid", lineCount);
+			fprintf(stderr, "Invalid date in line %i\n", lineCount);
 
-			if (continueAfterDateError)
+			if (CONTINUE_AFTER_DATE_ERROR)
 			{
 				continue;
 			}
@@ -110,14 +110,14 @@ int main(void)
 		// TODO
 	}
 	
-	free(cur_p);
+	free(prsd_p);
 	free(buffer);
 	fclose(fp);
 
 	return 0;
 }
 
-bool dateIsValid(struct ParsedDeadline* cur_p)
+bool dateIsValid(struct ParsedDeadline* prsd_p)
 {
 	// TODO
 	
@@ -134,30 +134,30 @@ bool fpIsValid(FILE* fp)
 	return (fp != NULL) ? true : false;
 }
 
-void printLine(struct DeadlineInRelativeTime calculatedDeadline) 
+void printRelativeDeadline(struct DeadlineInRelTime rel) 
 {
 	// TODO
 	
 	return;
 }
 
-void zeroBuffer(struct ParsedDeadline* cur_p)
+void zeroParsedDeadlineTitle(struct ParsedDeadline* prsd_p)
 {
 	
-	for (int titleLength = strlen(cur_p->title), i = 0; i < titleLength; i++)
+	for (int titleLength = strlen(prsd_p->title), i = 0;
+			i < titleLength; i++)
 	{
-		cur_p->title[i] = '\0';
+		prsd_p->title[i] = '\0';
 	}
 
 	return;
 }
 
-struct DeadlineInRelativeTime calculateDaysToDeadline(struct ParsedDeadline* cur_p)
+struct DeadlineInRelTime generateRelDeadline(struct ParsedDeadline* prsd_p)
 {
-	struct DeadlineInRelativeTime calculatedDeadline;
+	struct DeadlineInRelTime rel = {0, ""}; // FIXME Testing
 
-	
 	// TODO
 	
-	return calculatedDeadline;
+	return rel;
 }

@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -Wall -Wextra -Werror -Wno-unused-variable -Wno-unused-parameter
+CFLAGS = -g -Wall -Wextra -Werror -Wno-unused-parameter
 NAME= stprocras-list
 
 $(NAME): $(NAME).c
