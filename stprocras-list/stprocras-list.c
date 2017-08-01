@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 struct ParsedDeadline 
@@ -51,9 +52,10 @@ bool monthHasThirtyOneDays(unsigned int mon);
 bool monthIsFebruary(unsigned int mon);
 bool timeIsValid(unsigned int hr, unsigned int min, unsigned int sec);
 bool yearIsLeap(unsigned int yr);
-void printRelativeDeadline(struct DeadlineInRelTime rel);
+void printRelDeadline(struct DeadlineInRelTime rel);
 void zeroParsedDeadlineTitle(struct ParsedDeadline* prsd_p);
-struct DeadlineInRelTime generateRelDeadline(struct ParsedDeadline* prsd_p);
+struct tm generateAndPopulateTm(struct ParsedDeadline* prsd_p);
+struct DeadlineInRelTime generateRelDeadline(struct tm* Tm_p, char* title);
 
 // TODO Add int argc, char* argv[] when implementing inputs
 int main(void)
@@ -80,7 +82,7 @@ int main(void)
 	size_t const formatLength = (size_t) snprintf(NULL, 0,
 				BASE_FORMAT_TO_MODIFY, TITLE_SIZE);
 
-	// Line format: ISO 8601 + title string	
+	// Line format: date + ; + title string	
 	char lineFormat[formatLength + 1];
 
 	/* Craft the format that will be used in scanf.
@@ -113,6 +115,14 @@ int main(void)
 				return HALT_INVALID_DATE;
 			}
 		}
+
+		struct tm Tm = generateAndPopulateTm(prsd_p);
+
+		struct DeadlineInRelTime rel;
+
+		rel = generateRelDeadline(&Tm, prsd_p->title);
+
+		printRelDeadline(rel);
 
 		// TODO
 	}
@@ -225,9 +235,10 @@ bool yearIsLeap(unsigned int yr)
 	return false;
 }
 
-void printRelativeDeadline(struct DeadlineInRelTime rel) 
+void printRelDeadline(struct DeadlineInRelTime rel) 
 {
 	// TODO
+	printf("%i\t%s\n", rel.days, rel.title);
 	
 	return;
 }
@@ -242,11 +253,31 @@ void zeroParsedDeadlineTitle(struct ParsedDeadline* prsd_p)
 	return;
 }
 
-struct DeadlineInRelTime generateRelDeadline(struct ParsedDeadline* prsd_p)
+struct tm generateAndPopulateTm(struct ParsedDeadline* prsd_p)
+{
+	struct tm Tm;
+
+	Tm.tm_sec  = prsd_p->sec;
+	Tm.tm_min  = prsd_p->min;
+	Tm.tm_hour = prsd_p->hr;
+	Tm.tm_mday = prsd_p->day;
+	Tm.tm_mon  = (prsd_p->mon) - 1; // tm struct mon goes 0 to 11
+	Tm.tm_year = (prsd_p->yr) - 1900; // tm struct year starts at 1900
+
+	return Tm;
+}
+
+struct DeadlineInRelTime generateRelDeadline(struct tm* Tm_p, char* title)
 {
 	struct DeadlineInRelTime rel = {0, ""}; // FIXME Testing
 
-	// TODO
-	
+	time_t timeNow = time(NULL);
+	time_t timeDeadline = mktime(Tm_p);
+
+	int diffSeconds = timeDeadline - timeNow;
+	int diffDays = diffSeconds / 86400; // Intentionally truncated
+
+	rel.days = diffDays;
+	strncpy(rel.title, title, TITLE_SIZE);
 	return rel;
 }
