@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -g -Wall -Wextra -Werror -Wno-unused-parameter
-NAME = stprocras-list
+NAME = stprocras-add
 
 $(NAME) : $(NAME).c
 	$(CC) $(CFLAGS) -o $(NAME) $(NAME).c

@@ -1,27 +1,14 @@
-#define STD_BUF_SIZE 4096
-#define TITLE_SIZE 128 
-
-#define EPOCH_YEAR 1970
-
-#define BASE_FORMAT_TO_MODIFY "%%4i%%2i%%2iT%%2i%%2i%%2iZ;%%%i[^\t\n]"
-#define TESTFILE_PATH "tests/test.pcr"
-
-#define CONTINUE_AFTER_DATE_ERROR true // FIXME Testing until flag can be parsed
-
-// Dummy returns so that GCC does not complain & to keep track of these tests
-#define TEST_DUMMY_TRUE 1
-#define TEST_DUMMY_FALSE 0
-
-// Error codes
-#define HALT_FILE_UNREADABLE -1
-#define HALT_FILE_FP_INVALID -2
-#define HALT_INVALID_DATE -3
+#include "../include.h"
 
 #include <argp.h>
+#include <dirent.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -46,7 +33,8 @@ struct DeadlineInRelTime
 
 bool dateIsValid(unsigned int yr, unsigned int mon, unsigned int day);
 bool datetimeIsValid(struct ParsedDeadline* prsd_p);
-bool fileExistsAndIsReadable(char* filePathToCheck);
+bool directoryExists(char** dirPath_p);
+bool fileExistsAndIsReadable(const char* const filePathToCheck);
 bool fpIsValid(FILE* fp);
 bool monthHasThirtyOneDays(unsigned int mon);
 bool monthIsFebruary(unsigned int mon);
@@ -55,32 +43,81 @@ bool yearIsLeap(unsigned int yr);
 void printRelDeadline(struct DeadlineInRelTime rel);
 void zeroParsedDeadlineTitle(struct ParsedDeadline* prsd_p);
 struct tm generateAndPopulateTm(struct ParsedDeadline* prsd_p);
-struct DeadlineInRelTime generateRelDeadline(struct tm* Tm_p, char* title);
+struct DeadlineInRelTime generateRelDeadline(struct tm* TmDline_p, char* title);
 
 // TODO Add int argc, char* argv[] when implementing inputs
 int main(void)
 {
-	char* csvFilePath = TESTFILE_PATH; // FIXME Testing
-	if (!fileExistsAndIsReadable(csvFilePath))
+	// Return value for final return after cleanup 
+	int retVal = 0;
+
+	char** pathDbDir_p;
+	char* homePath = malloc(PATH_MAX);
+	if (!*homePath)
 	{
-		fprintf(stderr, "File does not exist or is not readable!\n");
-		return HALT_FILE_UNREADABLE;
+		fprintf(stderr, "Home path could not be malloc'd!");
+		retVal = HALT_MALLOC_HOME_PATH;
+		goto cleanup;
+	}
+
+	const char* const homeVar = getenv("HOME");
+
+	if (homeVar == NULL)
+	{
+		pathDbDir_p = &FALLBACK_FILE_PATH;
+	}
+
+	else
+	{
+		pathDbDir_p = &homePath;
 	}
 	
-	FILE* fp = fopen(csvFilePath, "r");
+	if (!directoryExists(pathDbDir_p))
+	{
+		mkdir(*pathDbDir_p, 0700);
+	}
+
+	char* dbFilePath = malloc(PATH_MAX);
+	if (!*dbFilePath)
+	{
+		fprintf(stderr, "Database file path could not be malloc'd!");
+		retVal = HALT_MALLOC_DB_FILE_PATH;
+		goto cleanup;
+	}
+
+	dbFilePath = snprintf(dbFilePath, sizeof(dbFilePath), "%s/%s",
+			*pathDbDir_p, DB_FILE_NAME);
+
+	if (!fileExistsAndIsReadable(dbFilePath))
+	{
+		// Just for purposes of creating file
+		FILE* fp = fopen(dbFilePath, "a");
+		fclose(fp);
+	}
 	
+	FILE* fp = fopen(dbFilePath, "r");
 	if (!fpIsValid(fp))
 	{
 		fprintf(stderr, "File stream is not valid!\n");
-		return HALT_FILE_FP_INVALID;
+		retVal = HALT_FILE_FP_INVALID;
+		goto cleanup;
 	}
 
-	size_t bufferSize = sizeof(char) * STD_BUF_SIZE;
-	char* buffer = malloc(bufferSize);
+	size_t lineBufferSize = _POSIX2_LINE_MAX; 
+
+	char* lineBuffer = malloc(lineBufferSize);
+	if (!*lineBuffer)
+	{
+		fprintf(stderr, "Line buffer could not be malloc'd!");
+		retVal = HALT_MALLOC_LINE_BUF;
+		goto cleanup;
+	}
+
+	const char* const baseFormatToModify = "%%4d%%2d%%2dT%%2d%%2d%%2dZ;%%%i[^\t\n]";
 
 	// Check how much space is needed for format fed to scanf
 	size_t const formatLength = (size_t) snprintf(NULL, 0,
-				BASE_FORMAT_TO_MODIFY, TITLE_SIZE);
+				baseFormatToModify, TITLE_SIZE);
 
 	// Line format: date + ; + title string	
 	char lineFormat[formatLength + 1];
@@ -88,15 +125,21 @@ int main(void)
 	/* Craft the format that will be used in scanf.
 	 * Will keep the title length correct even if the format
 	 * layout is changed */
-	sprintf(lineFormat, BASE_FORMAT_TO_MODIFY, TITLE_SIZE);
+	sprintf(lineFormat, baseFormatToModify, TITLE_SIZE);
 
 	struct ParsedDeadline* prsd_p = malloc(sizeof(struct ParsedDeadline) + 1);
+	if (!*prsd_p)
+	{
+		fprintf(stderr, "Parsed deadline struct could not be malloc'd!");
+		retVal = HALT_MALLOC_PARSED_DLINE_STRUCT;
+		goto cleanup;
+	}
 
 	for (int lineCount = 1;
-			getline(&buffer, &bufferSize, fp) != -1; ++lineCount) 
+			getline(&lineBuffer, &lineBufferSize, fp) != -1; ++lineCount) 
 	{
 		zeroParsedDeadlineTitle(prsd_p);
-		sscanf(buffer, lineFormat,
+		sscanf(lineBuffer, lineFormat,
 				&(prsd_p->yr), &(prsd_p->mon), &(prsd_p->day),
 				&(prsd_p->hr), &(prsd_p->min), &(prsd_p->sec),
 				prsd_p->title);
@@ -112,7 +155,8 @@ int main(void)
 
 			else
 			{
-				return HALT_INVALID_DATE;
+				retVal = HALT_INVALID_DATE;
+				goto cleanup;
 			}
 		}
 
@@ -126,12 +170,15 @@ int main(void)
 
 		// TODO
 	}
-	
-	free(prsd_p);
-	free(buffer);
-	fclose(fp);
 
-	return 0;
+cleanup:
+	if (*homePath) free(homePath);
+	if (*dbFilePath) free(dbFilePath);
+	if (*prsd_p) free(prsd_p);
+	if (*lineBuffer) free(lineBuffer);
+	if (*fp) fclose(fp);
+
+	return retVal;
 }
 
 bool datetimeIsValid(struct ParsedDeadline* prsd_p)
@@ -179,7 +226,23 @@ bool dateIsValid(unsigned int yr, unsigned int mon, unsigned int day)
 	return false;
 }
 
-bool fileExistsAndIsReadable(char* filePathToCheck)
+bool directoryExists(char** dirPath_p)
+{
+	DIR* dir = opendir(*dirPath_p);
+	
+	if (dir)
+	{
+		closedir(dir);
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
+}
+
+bool fileExistsAndIsReadable(const char* const filePathToCheck)
 {
 	return (access(filePathToCheck, R_OK) == 0);
 }
@@ -193,17 +256,17 @@ bool monthHasThirtyOneDays(unsigned int mon)
 {
 	// "Thirty days hath September / April, June and November ..."	
 	// February should also return false
-	// That leaves Jan, Mar, May, Jul, Aug, Oct, Dec as true
+	// That leaves Jan, Mar, May, Jul, Aug, Oct, Dec as returning true
 	
 	switch(mon)
 	{
-		case 1:
-		case 3:
-		case 5:
-		case 7:
-		case 8:
-		case 10:
-		case 12:
+		case JANUARY_NUM:
+		case MARCH_NUM:
+		case MAY_NUM:
+		case JULY_NUM:
+		case AUGUST_NUM:
+		case OCTOBER_NUM:
+		case DECEMBER_NUM:
 			return true;
 		default:
 			return false;
@@ -237,7 +300,6 @@ bool yearIsLeap(unsigned int yr)
 
 void printRelDeadline(struct DeadlineInRelTime rel) 
 {
-	// TODO
 	printf("%i\t%s\n", rel.days, rel.title);
 	
 	return;
@@ -264,18 +326,19 @@ struct tm generateAndPopulateTm(struct ParsedDeadline* prsd_p)
 	Tm.tm_mon  = (prsd_p->mon) - 1; // tm struct mon goes 0 to 11
 	Tm.tm_year = (prsd_p->yr) - 1900; // tm struct year starts at 1900
 
+	Tm.tm_isdst = -1; // Negative value forces OS to look if DST applies 
+
 	return Tm;
 }
 
-struct DeadlineInRelTime generateRelDeadline(struct tm* Tm_p, char* title)
+struct DeadlineInRelTime generateRelDeadline(struct tm* TmDline_p, char* title)
 {
 	struct DeadlineInRelTime rel = {0, ""}; // FIXME Testing
 
-	time_t timeNow = time(NULL);
-	time_t timeDeadline = mktime(Tm_p);
+	struct tm TmNow = ctime(time(NULL));
 
-	int diffSeconds = timeDeadline - timeNow;
-	int diffDays = diffSeconds / 86400; // Intentionally truncated
+	time_t diffSeconds = timeDeadline - timeNow;
+	time_t diffDays = diffSeconds / 86400; // Intentionally truncated
 
 	rel.days = diffDays;
 	strncpy(rel.title, title, TITLE_SIZE);

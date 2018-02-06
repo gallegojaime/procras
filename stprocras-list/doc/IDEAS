@@ -8,6 +8,8 @@
 ### By Jaime Gallego.
 
 - Input file has extension .pcr.
+- Option to pretend that it is another date, i.e., show deadlines as if today
+	were day xyz.
 - Unix philosophy: take input from stdin or CSV file, output in simple TSV format.
 
 	13	Do foo\n
