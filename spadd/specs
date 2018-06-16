@@ -1,0 +1,14 @@
+Dependencies: Uses dateparser
+
+stprocras-add
+
+OR
+
+stprocras add (using stprocras program, referral argument add)
+
+Arguments:
+
+stprocras add "TEXT" [TIME]
+
+When date is not supplied, assume to be completed by the end of the day (00:00 of next day.)
+

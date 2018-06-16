@@ -1,0 +1,63 @@
+#!/bin/env python3
+
+import argparse, csv, dateparser, logging, os, pytz, sys
+from datetime import datetime, timedelta, timezone
+from tzlocal import get_localzone
+
+# Function to output string from one-element list or a string
+def converttostring(listorstring):
+    return ''.join(listorstring)
+
+# Local "naive" time to a safe UTC time (with millisecond & "aware" zeroed offset)
+def localnaivetoutc(localtime_naive, localtz_pytz):
+    try:
+        localtime_aware = localtz_pytz.localize(localtime_naive) # is_dst=None)
+    except NonExistentTimeError:
+        logging.critical("DST jumps and skips the time provided. Cannot add time, choose another.")
+        exit()
+    except AmbiguousTimeError:
+        logging.critical("DST makes this time ambiguous; cannot discern between both. Choose another time.")
+
+    utc = localtime_aware.astimezone(pytz.utc)
+    return utc
+
+# "Aware" UTC time w/ milliseconds & zeroed offset to compliant ISO 8601 UTC time (w/o offset colon)
+def utctoiso(utc):
+    iso = utc.strftime("%Y-%m-%dT%H:%M:%S%z")
+    return iso
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument("title", help="Title of the task to be added")
+parser.add_argument("timedue", nargs='?', default="tomorrow", help="Time at which the task is due. Absolute or relative time, expressed through natural language (\"tomorrow\"), ISO 8601 (with optional UTC offset) or otherwise.")
+
+DEFAULTFILE = os.environ['HOME'] + "/.stprocras-events"
+parser.add_argument("-f", "--file", nargs=1, default=DEFAULTFILE, help="Plaintext database file to write into, overriding the default main file.")
+
+args = parser.parse_args() # Generates title and time-due variables
+
+localtz = get_localzone()
+localtz_pytz = pytz.timezone(str(localtz))
+
+# Function that processes timedue to yield timestamp
+try:
+    timedue_naive = dateparser.parse(args.timedue, settings={'PREFER_DATES_FROM': 'future'})
+
+    if timedue_naive == None:
+        raise ValueError(sys.argv[0] + " ValueError: Date was not understood by parser.")
+
+except ValueError as e:
+    logging.critical(e)
+    exit()
+
+utc = localnaivetoutc(timedue_naive, localtz_pytz)
+iso = utctoiso(utc)
+
+firstcolumnname = "name"
+secondcolumnname = "isodt"
+columnnames = [firstcolumnname, secondcolumnname]
+insert = {columnnames[0]: args.title, columnnames[1]: iso}
+
+with open(converttostring(args.file), 'a', newline='') as csvfile:
+    writer = csv.DictWriter(csvfile, fieldnames=columnnames, delimiter='\t') 
+    writer.writerow(insert)

@@ -1,2 +1,0 @@
-POSIX compliance changing argp to getopt or other alternative.
-Change default date format from Unix seconds to machine-friendly version of ISO 8601 (prevents 2038 bug)

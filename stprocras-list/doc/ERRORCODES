@@ -1,3 +1,0 @@
--1: file does not exist or is not readable (HALT_FILE_UNREADABLE)
--2: file stream is not valid ---FP == NULL--- (HALT_FILE_FP_INVALID)
--3: halted because of invalid date (HALT_INVALID_DATE)
