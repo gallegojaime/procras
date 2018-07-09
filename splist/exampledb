@@ -1,0 +1,6 @@
+This is event no. 1	2020-01-01T00:00:00+0000
+This is event no. 2	2010-11-24T10:03:18+0000
+This is a copy of event no. 2, but with an UTC shift of +2h	2010-11-24T10:03:18+0200
+This is a copy of event no. 2, but with an UTC shift of +23h	2010-11-24T10:03:18+2300
+This is (invalid) event no. 3	20101124T100318
+This is (invalid) event no. 4 20000104T040000
