@@ -13,9 +13,14 @@ DEFAULTFILE = os.environ['HOME'] + "/.stprocras-events"
 
 parser.add_argument("-f", "--file", default=DEFAULTFILE, help="Flat tab-separated values file to read from, overriding the default dotfile in home directory.")
 
+parser.add_argument("-r", "--human", "--human-readable", action="store_true", help="Format output in a way more readable for humans, less friendly for input to other programs.")
+
 args = parser.parse_args()
 
-SEPARATOR = "\t" # TODO To change programatically with human readable flag
+if args.human:
+    SEPARATOR = " - "
+else:
+    SEPARATOR = "\t"
 
 firstcolumnname = "name"
 secondcolumnname = "isodt"
@@ -53,9 +58,13 @@ try:
                 output += str(delta_hour) + " hours, " + str(delta_min) + " minutes, " + str(delta_sec) + " seconds left"
 
             elif delta.days < 0:
-                output += "\u001b[41;1m\u001b[37m" + str(abs(delta.days)) + " days past"
+                if args.human:
+                    output += "\u001b[41;1m\u001b[37m" # Color alert
 
-            output += "\u001b[0m" # Reset any color change 
+                output += str(abs(delta.days)) + " days past"
+
+            if args.human:
+                output += "\u001b[0m" # Reset any color change before next line
 
             print(output)
 

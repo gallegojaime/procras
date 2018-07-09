@@ -29,8 +29,9 @@ time formats. Natural language, such as `tomorrow`, `October 23`, or `in 2 weeks
 More detailed information is reachable by calling `spadd -h` or `spadd --help`.
 
 ## Listing deadlines
-The `splist` command shows all stored deadlines and time left to reach them. Past deadlines are
-signaled by a dramatic color change. The syntax is `splist [-f FILE]`.
+The `splist` command shows all stored deadlines and time left to reach them. The syntax is `splist [-f FILE]`.
+
+If you don't use `splist` for machine-friendly output, the `-r` (or `--human`, `--human-readable`) flag will format a prettier output, and past deadlines will be signaled by a dramatic color change. 
 
 More detailed information is reachable by calling `splist -h` or `splist --help`.
 
@@ -49,6 +50,9 @@ The time format used internally is ISO 8601 compliant UTC time: `YYYY-MM-DDTHH:M
 and must be exact.*
 The +ZZZZ offset will be +0000 by default, signifying null deviation from UTC time.
 If written manually into the database, nonzero offsets are supported for the programmer's comfort, although not encouraged.
+
+# TODOs
+Change machine-friendly time output to "-1d" for 1 day past, "2w" for in 2 weeks, etc.
 
 # Authors
 * Jaime `tri0d` Gallego, initial work, MW version.
