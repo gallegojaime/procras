@@ -15,6 +15,8 @@ parser.add_argument("-f", "--file", default=DEFAULTFILE, help="Flat tab-separate
 
 args = parser.parse_args()
 
+SEPARATOR = "\t" # TODO To change programatically with human readable flag
+
 firstcolumnname = "name"
 secondcolumnname = "isodt"
 columnnames = [firstcolumnname, secondcolumnname]
@@ -34,8 +36,11 @@ try:
 
             delta = dtwhen - dtnow
 
+            output = str(reader.line_num) + SEPARATOR + row['name'] + SEPARATOR # An "output" value to append things
+
             if delta.days > 0:
-                print(row['name'] + " - " + str(delta.days) + " days left", end='')
+                output += str(delta.days) + " days left"
+
             elif delta.days == 0:
                 delta_sec = int(delta.total_seconds())
 
@@ -45,11 +50,15 @@ try:
                 delta_min = delta_sec // 60
                 delta_sec -= delta_min * 60
 
-                print(row['name'] + " - " + str(delta_hour) + " hours, " + str(delta_min) + " minutes, " + str(delta_sec) + " seconds left", end='')
-            elif delta.days < 0:
-                print("\u001b[41;1m\u001b[37m" + row['name'] + " - " + str(abs(delta.days)) + " days past", end='')
+                output += str(delta_hour) + " hours, " + str(delta_min) + " minutes, " + str(delta_sec) + " seconds left"
 
-            print("\u001b[0m")
+            elif delta.days < 0:
+                output += "\u001b[41;1m\u001b[37m" + str(abs(delta.days)) + " days past"
+
+            output += "\u001b[0m" # Reset any color change 
+
+            print(output)
+
 except FileNotFoundError as e:
     logging.critical(sys.argv[0] + " FileNotFoundError: default or provided database does not exist.")
     exit()
