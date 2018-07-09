@@ -44,8 +44,8 @@ of the title and the UTC time separated by a tab space. Modify these at your lik
 The "flat file" which st-procras uses as a database is the dotfile `.stprocras-events` in the `$HOME` directory.
 The `-f` flag in the st-procras commands overrides default behavior and allows for an alternate file to operate with.
 
-## Time format in the database
-The time format used is ISO 8601 UTC time: `YYYY-MM-DDTHH:MM:SS+ZZZZ`. *This is the only permissible format
+## Internal time format for the database
+The time format used internally is ISO 8601 compliant UTC time: `YYYY-MM-DDTHH:MM:SS+ZZZZ`. *This is the only permissible format
 and must be exact.*
 The +ZZZZ offset will be +0000 by default, signifying null deviation from UTC time.
 If written manually into the database, nonzero offsets are supported for the programmer's comfort, although not encouraged.
