@@ -52,7 +52,6 @@ The +ZZZZ offset will be +0000 by default, signifying null deviation from UTC ti
 If written manually into the database, nonzero offsets are supported for the programmer's comfort, although not encouraged.
 
 # TODOs
-Change machine-friendly time output to "-1d" for 1 day past, "2w" for in 2 weeks, etc.
 
 # Authors
 * Jaime `tri0d` Gallego, initial work, MW version.
