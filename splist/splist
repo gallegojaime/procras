@@ -64,7 +64,9 @@ try:
 
             delta = dtwhen - dtnow
 
-            output = str(reader.line_num) + FORMATSDICT['separator'] + row['name'] + FORMATSDICT['separator'] # An "output" value to append things
+            # An "output" value to append things
+            # line_num starts counting from 1, but we want to count from 0
+            output = str(reader.line_num - 1) + FORMATSDICT['separator'] + row['name'] + FORMATSDICT['separator']
 
             if delta.days > 0:
                 output += FORMATSDICT['machinepositive'] + str(delta.days) + FORMATSDICT['days'] + FORMATSDICT['humanleft']

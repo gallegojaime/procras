@@ -39,7 +39,7 @@ args = parser.parse_args() # Generates title and time-due variables
 localtz = get_localzone()
 localtz_pytz = pytz.timezone(str(localtz))
 
-# Function that processes timedue to yield timestamp
+# Processes timedue to yield timestamp
 try:
     timedue_naive = dateparser.parse(args.timedue, settings={'PREFER_DATES_FROM': 'future'})
 
