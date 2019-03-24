@@ -36,7 +36,7 @@ If you don't use `splist` for machine-friendly output, the `-r` (or `--human`, `
 More detailed information is reachable by calling `splist -h` or `splist --help`.
 
 ## Modifying and removing deadlines
-Deadline modification and removal are currently a work-in-progress, but the workaround is not complicated.
+Deadline modification and removal are currently a work-in-progress, which will be implemented by spremove. For now, the workaround is not complicated.
 Simply open the flat file containing the deadline with your favourite text editor (Notepad, vim, emacs...;
 document editors such as Word are discouraged). Find the line containing the deadline, which will consist
 of the title and the UTC time separated by a tab space. Modify these at your liking or delete the whole line.
@@ -52,9 +52,11 @@ The +ZZZZ offset will be +0000 by default, signifying null deviation from UTC ti
 If written manually into the database, nonzero offsets are supported for the programmer's comfort, although not encouraged.
 
 # TODOs
+* Complete a minimal working version of spremove.
+* Make splist count from 0 instead of from 1
 
 # Authors
 * Jaime `tri0d` Gallego, initial work, MW version.
 
 # License
-The `st-procras` program compendium is protected under the GNU GPL v3 license (must be the libertarian in me). For the full version, read the LICENSE file.
+The `st-procras` program compendium is protected under the BSD 3-Clause license (must be the libertarian in me). For the full version, read the LICENSE file.
