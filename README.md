@@ -38,10 +38,12 @@ More detailed information is reachable by calling `splist -h` or `splist --help`
 ## Removing deadlines
 The `spremove` command allows to remove the rows listed by `splist` with ease. Its syntax is `spremove [-f FILE] rowNumber [moreRowNumbers...]`.
 
-Takes as many row numbers as you need. Careful: the number of a row changes, because its row ID is the line number itself.
-If you delete lines, the numbering will be updated, as shown with a new execution of `splist`.
+Takes as many row numbers as you need. CAREFUL: numbers of rows can change after a deletion, because its row ID is the relative line number itself.
+If you delete lines, the numbering will be updated. Therefore, check them with a new execution of `splist`.
 
 For its functionality, `spremove` first writes into a temporary file with a trailing tilde (~), and then this file replaces the old one.
+
+More detailed information is reachable by calling `splist -h` or `splist --help`.
 
 # Default flat file
 The "flat file" which st-procras uses as a database is the dotfile `.stprocras-events` in the `$HOME` directory.
