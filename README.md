@@ -53,12 +53,12 @@ The `-f` flag in the st-procras commands overrides default behavior and allows f
 The time format used internally is ISO 8601 compliant UTC time: `YYYY-MM-DDTHH:MM:SS+ZZZZ`. *This is the only permissible format
 and must be exact.*
 The +ZZZZ offset will be +0000 by default, signifying null deviation from UTC time.
-If written manually into the database, nonzero offsets are supported for the programmer's comfort, although not encouraged.
+If written manually into the database, nonzero offsets are supported for the programmer's comfort: write the (local) time and the UTC offset of your area. They are not encouraged, however.
 
 # TODOs
 * Consider whether to code new program for modification of existing deadlines. May add too much complexity.
 * File I/O safety & security checks on the remove-and-replace process of spremove, and also in the other programs if necessary.
-* Test to confirm programs work in unison. For example, if they work badly with malformed or whitespace lines, fix that appropriately so that it fits expected behavior.
+* Implementation of TDD: Test to confirm programs work in unison. For example, if they work badly with malformed or whitespace lines, fix that appropriately so that it fits expected behavior.
     * `spremove`
     * `splist` row numbers shown, do they change and skip natural progression with weird lines in the database? 
 * Appropriate commenting.
