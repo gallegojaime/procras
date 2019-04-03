@@ -16,7 +16,7 @@ Python 3 and dateparser, pytz, tzlocal.
 
 # Usage
 This CLI version of st-procras is pretty simple to use. The fundamental operations it encompasses
-are the listing, adding, modification and removal of deadlines.
+are the listing, adding, and removal of deadlines.
 
 ## Adding deadlines
 The `spadd` command will let us add a deadline. The syntax is `spadd [-f FILE] title [time]`,
