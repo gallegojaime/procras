@@ -1,11 +1,11 @@
-                       8
-              .oPYo.  o8P       .oPYo. oPYo. .oPYo. .oPYo. oPYo. .oPYo. .oPYo.
-              Yb..     8  ooooo 8    8 8  `' 8    8 8    ' 8  `' .oooo8 Yb..
-                'Yb.   8        8    8 8     8    8 8    . 8     8    8   'Yb.
-              `YooP'   8        8YooP' 8     `YooP' `YooP' 8     `YooP8 `YooP'
-              :.....:::..:::::::8 ....:..:::::.....::.....:..:::::.....::.....:
-              ::::::::::::::::::8 :::::::::::::::::::::::::::::::::::::::::::::
-              ::::::::::::::::::..:::::::::::::::::::::::::::::::::::::::::::::
+             8
+    .oPYo.  o8P       .oPYo. oPYo. .oPYo. .oPYo. oPYo. .oPYo. .oPYo.
+    Yb..     8  ooooo 8    8 8  `' 8    8 8    ' 8  `' .oooo8 Yb..
+      'Yb.   8        8    8 8     8    8 8    . 8     8    8   'Yb.
+    `YooP'   8        8YooP' 8     `YooP' `YooP' 8     `YooP8 `YooP'
+    :.....:::..:::::::8 ....:..:::::.....::.....:..:::::.....::.....:
+    ::::::::::::::::::8 :::::::::::::::::::::::::::::::::::::::::::::
+    ::::::::::::::::::..:::::::::::::::::::::::::::::::::::::::::::::
 st-procras: keep your deadlines in check.
 
 The st-procras package improves your, or your team member's, situational awareness. Keeping a local database of deadlines, one can use it alone or as the base for
