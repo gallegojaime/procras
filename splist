@@ -52,13 +52,14 @@ columnnames = [firstcolumnname, secondcolumnname]
 try:
     with open(converttostring(args.file), 'r', newline='') as dsvfile:
         reader = csv.DictReader(dsvfile, columnnames, delimiter='\t')
+        rowCounter = 0
         for row in reader:
             try:
                 dtwhen = datetime.strptime(row[secondcolumnname], "%Y-%m-%dT%H:%M:%S%z")
             except (ValueError, TypeError) as e:
-                logging.warning(sys.argv[0] + ": Date in line " + str(reader.line_num) + " does not adhere to format. Skipping.")
+                logging.warning(sys.argv[0] + ": Date in raw line " + str(reader.line_num - 1) + " (counting from zero) does not conform to format. Skipping.")
                 continue
-
+            
             utc_dtnow = datetime.now(timezone.utc)
             dtnow = utc_dtnow.astimezone()
 
@@ -66,7 +67,7 @@ try:
 
             # An "output" value to append things
             # line_num starts counting from 1, but we want to count from 0
-            output = str(reader.line_num - 1) + FORMATSDICT['separator'] + row['name'] + FORMATSDICT['separator']
+            output = str(rowCounter) + FORMATSDICT['separator'] + row['name'] + FORMATSDICT['separator']
 
             if delta.days > 0:
                 output += FORMATSDICT['machinepositive'] + str(delta.days) + FORMATSDICT['days'] + FORMATSDICT['humanleft']
@@ -92,6 +93,8 @@ try:
 
             if args.human:
                 output += "\u001b[0m" # Reset any color change before next line
+
+            rowCounter += 1
 
             print(output)
 

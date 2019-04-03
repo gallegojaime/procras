@@ -2,6 +2,7 @@
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
 import argparse, csv, logging, os, sys
+from datetime import datetime
 
 def converttostring(listorstring):
     return ''.join(listorstring)
@@ -27,11 +28,19 @@ try:
         reader = csv.DictReader(olddsvfile, columnnames, delimiter='\t')
         writer = csv.DictWriter(newdsvfile, fieldnames=columnnames, delimiter='\t')
 
+        rowCounter = 0
         for row in reader:
+            try:
+                dtwhen = datetime.strptime(row[secondcolumnname], "%Y-%m-%dT%H:%M:%S%z")
+            except (ValueError, TypeError) as e:
+                logging.warning(sys.argv[0] + ": Date in raw line " + str(reader.line_num - 1) + " (counting from zero) does not conform to format. Skipping.")
+                continue
+
             # The rows to delete will not be written into the new file
-            # line_num starts counting from 1, so we subtract 1 from that number
-            if ((reader.line_num - 1) not in args.integers):
+            if (rowCounter not in args.integers):
                 writer.writerow(row)
+
+            rowCounter += 1
 
 except FileNotFoundError as e:
     logging.critical(sys.argv[0] + " FileNotFoundError: default or provided database does not exist.")

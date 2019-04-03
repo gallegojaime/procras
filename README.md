@@ -41,7 +41,9 @@ The `spremove` command allows to remove the rows listed by `splist` with ease. I
 Takes as many row numbers as you need. CAREFUL: numbers of rows can change after a deletion, because its row ID is the relative line number itself.
 If you delete lines, the numbering will be updated. Therefore, check them with a new execution of `splist`.
 
-For its functionality, `spremove` first writes into a temporary file with a trailing tilde (~), and then this file replaces the old one.
+Because of its functionality, `spremove`:
+* first writes into a temporary file with a trailing tilde (~), and then this file replaces the old one. 
+* removes any lines that do not conform with expected format.
 
 More detailed information is reachable by calling `splist -h` or `splist --help`.
 
@@ -56,11 +58,9 @@ The +ZZZZ offset will be +0000 by default, signifying null deviation from UTC ti
 If written manually into the database, nonzero offsets are supported for the programmer's comfort: write the (local) time and the UTC offset of your area. They are not encouraged, however.
 
 # TODOs
-* Consider whether to code new program for modification of existing deadlines. May add too much complexity.
 * File I/O safety & security checks on the remove-and-replace process of spremove, and also in the other programs if necessary.
-* Implementation of TDD: Test to confirm programs work in unison. For example, if they work badly with malformed or whitespace lines, fix that appropriately so that it fits expected behavior.
-    * `spremove`
-    * `splist` row numbers shown, do they change and skip natural progression with weird lines in the database? 
+    * Does a file with appended ~ already exist, for example?
+* Implementation of TDD throughout the whole distribution.
 * Appropriate commenting.
 * Consolidate common functions into a shared file.
 * Package the programs and allow for necessary dependencies' automatic checks and installs.
